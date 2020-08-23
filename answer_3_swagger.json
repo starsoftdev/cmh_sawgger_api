@@ -12,6 +12,98 @@
     }
   ],
   "paths": {
+    "/v{version}/Purchase": {
+      "get": {
+        "tags": [
+          "Purchase"
+        ],
+        "operationId": "Purchase_GetPurchase",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditActionResultOfIEnumerableOfPurchaseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Purchase"
+        ],
+        "operationId": "Purchase_PostPurchase",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "newPurchase",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePurchaseRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditActionResultOfPurchaseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
     "/v{version}/Account/login": {
       "post": {
         "tags": [
@@ -4404,6 +4496,189 @@
   },
   "components": {
     "schemas": {
+      "AuditActionResultOfPurchaseModel": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditActionResult"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "object": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/PurchaseViewModel"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "CreatePurchaseRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "purchaseOrderId",
+          "purchaseItems"
+        ],
+        "properties": {
+          "purchaseOrderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "purchaseItems": {
+            "type": "array",
+            "minLength": 1,
+            "items": {
+              "$ref": "#/components/schemas/PurchaseItemModel"
+            }
+          }
+        }
+      },
+      "PurchaseItemModel": {
+        "type":"object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": "string"
+          },
+          "account": {
+            "type": "string"
+          },
+          "customerLineNumber": {
+            "type": "string"
+          },
+          "materialTransferNumber": {
+            "type": "string"
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "qty": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "purchasePrice": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "serialKitNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "partId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "procedureId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PurchaseItemViewModel": {
+        "type":"object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": "string"
+          },
+          "account": {
+            "type": "string"
+          },
+          "customerLineNumber": {
+            "type": "string"
+          },
+          "materialTransferNumber": {
+            "type": "string"
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "qty": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "purchasePrice": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "PurchaseViewModel": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TrackableModel"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "purchaseOrderId": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "purchaseOrderName": {
+                "type": "string"
+              },
+              "purchaseOrderDescription": {
+                "type": "string",
+                "nullable": true
+              },
+              "customerPurchaseNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "purchaseStatus": {
+                "type": "string"
+              },
+              "purchaseItems": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PurchaseItemViewModel"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "AuditActionResultOfIEnumerableOfPurchaseModel": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditActionResult"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "object": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "$ref": "#/components/schemas/PurchaseViewModel"
+                }
+              }
+            }
+          }
+        ]
+      },
       "AuditActionResultOfString": {
         "allOf": [
           {
